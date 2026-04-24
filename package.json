@@ -1,0 +1,42 @@
+{
+  "name": "@tasteee/snooks",
+  "version": "0.0.11",
+  "description": "Markdown-based scaffolding that lives in your repo",
+  "license": "MIT",
+  "keywords": [
+    "scaffolding",
+    "codegen",
+    "templates",
+    "cli",
+    "markdown"
+  ],
+  "type": "module",
+  "scripts": {
+    "build": "tsdown",
+    "dev": "tsx source/snooks.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "exports": {
+    ".": "./build/snooks.cjs"
+  },
+  "dependencies": {
+    "@inquirer/prompts": "^7.0.0",
+    "change-case": "^5.4.4",
+    "commander": "^14.0.0",
+    "fs-extra": "^11.3.0",
+    "globby": "^16.2.0",
+    "gray-matter": "^4.0.3"
+  },
+  "devDependencies": {
+    "@types/fs-extra": "^11.0.4",
+    "tsdown": "^0.21.10",
+    "tsx": "^4.19.0",
+    "typescript": "^5.9.3"
+  },
+  "bin": {
+    "snooks": "build/snooks.cjs"
+  },
+  "files": [
+    "build/**/*"
+  ]
+}

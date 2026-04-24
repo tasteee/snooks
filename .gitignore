@@ -1,0 +1,16 @@
+node_modules/
+build/
+.snooks/
+trash/
+.DS_Store
+*.log
+*.env
+.idea/
+.vscode/
+dist/
+coverage/
+*.zip
+*.tar.gz
+*.bak
+*.tmp
+*.swp
