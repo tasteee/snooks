@@ -15,7 +15,6 @@ type SnooksArgsT = Record<string, unknown>;
 type TemplateMetaT = {
   name?: string;
   output?: string;
-  options?: Record<string, { prompt?: string; default?: unknown }>;
 };
 
 type TemplateT = {
@@ -243,30 +242,6 @@ const chooseTemplate = async (
   return chooseTemplate(templates, slug);
 };
 
-const promptForMissingArgs = async (template: TemplateT, args: SnooksArgsT) => {
-  const options = template.meta.options || {};
-  const nextArgs = { ...args };
-
-  for (const key of Object.keys(options)) {
-    const hasValue = nextArgs[key] !== undefined;
-
-    if (hasValue) {
-      continue;
-    }
-
-    const option = options[key];
-    const answer = await input({
-      message: option.prompt || `${key}?`,
-      default:
-        option.default === undefined ? undefined : String(option.default),
-    });
-
-    nextArgs[key] = answer;
-  }
-
-  return nextArgs;
-};
-
 const safeJoin = (basePath: string, childPath: string) => {
   const cleanChildPath = childPath.replace(/^\/+/, "");
   const finalPath = path.resolve(basePath, cleanChildPath);
@@ -309,7 +284,7 @@ const make = async (
     name,
   };
 
-  const args = await promptForMissingArgs(template, baseArgs);
+  const args = baseArgs;
   const rawOutputRoot = options.at || template.meta.output || ".";
   const outputRoot = path.resolve(
     process.cwd(),
