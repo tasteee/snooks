@@ -27,6 +27,8 @@ type TemplateT = {
 const fencePattern = /```([a-zA-Z0-9_-]*)\s*([^\n`]*)\n([\s\S]*?)```/g;
 const outputPattern = /output=(?:"([^"]+)"|'([^']+)'|([^\s]+))/;
 const tokenPattern = /\[\[\s*(ARGS|CONFIG)\.([A-Z0-9_-]+)\s*\]\]/gi;
+const newTokenPattern = /\$\{(args|config)\.([a-z0-9_-]+)\}\$/gi;
+const simpleTokenPattern = /\$\$([a-z0-9_-]+)/gi;
 const legacyTokenPattern = /\$\(\s*(ARG|ENV)\.([A-Z0-9_-]+)\s*\)/gi;
 
 const findUp = async (name: string, startPath: string) => {
@@ -118,7 +120,29 @@ const render = (value: string, args: SnooksArgsT, config: SnooksConfigT) => {
     return String(resolvedValue ?? "");
   });
 
-  const legacyRendered = standardRendered.replace(
+  const newStyleRendered = standardRendered.replace(
+    newTokenPattern,
+    (...match) => {
+      const namespace = String(match[1]).toLowerCase();
+      const key = String(match[2]);
+      const source = namespace === "args" ? args : config;
+      const resolvedValue = getValue(source, key);
+
+      return String(resolvedValue ?? "");
+    },
+  );
+
+  const simpleRendered = newStyleRendered.replace(
+    simpleTokenPattern,
+    (...match) => {
+      const key = String(match[1]);
+      const resolvedValue = getValue(args, key);
+
+      return String(resolvedValue ?? "");
+    },
+  );
+
+  const legacyRendered = simpleRendered.replace(
     legacyTokenPattern,
     (...match) => {
       const namespace = String(match[1]).toUpperCase();
@@ -257,8 +281,8 @@ const safeJoin = (basePath: string, childPath: string) => {
 };
 
 const make = async (
-  nameOrTemplate?: string,
-  maybeTemplate?: string,
+  templateOrName?: string,
+  maybeName?: string,
   values: string[] = [],
   options: { at?: string } = {},
 ) => {
@@ -270,11 +294,11 @@ const make = async (
 
   const templates = await readTemplates(snooksPath);
   const config = await readPackageConfig(snooksPath);
-  const hasExplicitTemplate = Boolean(maybeTemplate);
-  const requestedTemplate = hasExplicitTemplate
-    ? maybeTemplate
-    : nameOrTemplate;
-  const initialName = hasExplicitTemplate ? nameOrTemplate : undefined;
+  const hasExplicitName = Boolean(maybeName);
+  const requestedTemplate = hasExplicitName
+    ? templateOrName
+    : undefined;
+  const initialName = hasExplicitName ? maybeName : templateOrName;
   const template = await chooseTemplate(templates, requestedTemplate);
   const name = initialName || (await input({ message: "Name?" }));
 
@@ -312,8 +336,8 @@ program
 
 program
   .command("make")
-  .argument("[nameOrTemplate]")
-  .argument("[template]")
+  .argument("[templateOrName]")
+  .argument("[name]")
   .argument("[values...]")
   .option("--at <path>")
   .action(make);

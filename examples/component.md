@@ -3,43 +3,43 @@ name: component
 output: src/components
 ---
 
-# [[ARGS.NAME]]
+# $$name
 
 A React component.
 
-```tsx output="/[[ARGS.NAME]]/index.tsx"
+```tsx output="/$$name/index.tsx"
 import "./index.css"
 
-type [[ARGS.NAME]]PropsT = {
+type ${args.name}$PropsT = {
   children: React.ReactNode
 }
 
-export const [[ARGS.NAME]] = (props: [[ARGS.NAME]]PropsT) => {
+export const $$name = (props: ${args.name}$PropsT) => {
   return (
-    <div className="[[ARGS.NAME]]">
+    <div className="$$name">
       {props.children}
     </div>
   )
 }
 ```
 
-```css output="/[[ARGS.NAME]]/index.css"
-.[[ARGS.NAME]] {
+```css output="/$$name/index.css"
+.$$name {
   display: flex;
 }
 ```
 
-```ts output="/[[ARGS.NAME]]/index.stories.ts"
+```ts output="/$$name/index.stories.ts"
 import type { Meta, StoryObj } from "@storybook/react"
-import { [[ARGS.NAME]] } from "."
+import { $$name } from "."
 
-const meta: Meta<typeof [[ARGS.NAME]]> = {
-  component: [[ARGS.NAME]],
+const meta: Meta<typeof $$name> = {
+  component: $$name,
 }
 
 export default meta
 
-type StoryT = StoryObj<typeof [[ARGS.NAME]]>
+type StoryT = StoryObj<typeof $$name>
 
 export const Default: StoryT = {
   args: {},
