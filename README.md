@@ -20,14 +20,14 @@ name: component
 output: src/components
 ---
 
-```tsx output="/[[ARGS.NAME]]/index.tsx"
-export const [[ARGS.NAME]] = () => {
-  return <div>[[ARGS.NAME]]</div>
+```tsx output="/$$name/index.tsx"
+export const $$name = () => {
+  return <div>$$name</div>
 }
 ```
 
-```css output="/[[ARGS.NAME]]/index.css"
-.[[ARGS.NAME]] {
+```css output="/$$name/index.css"
+.$$name {
   display: flex;
 }
 ```
@@ -36,7 +36,7 @@ export const [[ARGS.NAME]] = () => {
 Run it:
 
 ```bash
-snooks make Button component
+snooks make component Button
 ```
 
 Output:
@@ -55,9 +55,9 @@ That's it.
 ```bash
 snooks make                                    # pick template interactively
 snooks make component                          # pick a name interactively
-snooks make Button component                   # name + template
-snooks make Button component --at src/ui       # override output path
-snooks make Button component color=blue        # pass extra values
+snooks make component Button                   # template + name
+snooks make component Button --at src/ui       # override output path
+snooks make component Button color=blue        # pass extra values
 ```
 
 ---
@@ -70,40 +70,41 @@ A template is a markdown file in `.snooks/`. Any code block with `output="..."` 
 ---
 name: component
 output: src/components
-options:
-  version:
-    prompt: "What version?"
-    default: 0.0.1
 ---
 
 ```json output="/package.json"
-{ "version": "[[ARGS.VERSION]]" }
+{ "version": "$$version" }
 ```
 ````
 
 ### Frontmatter
 
-| Field     | Description                              |
-| --------- | ---------------------------------------- |
-| `name`    | Friendly name shown in the picker        |
-| `output`  | Default output directory                 |
-| `options` | Extra values to prompt for if not passed |
+| Field    | Description                       |
+| -------- | --------------------------------- |
+| `name`   | Friendly name shown in the picker |
+| `output` | Default output directory          |
 
 ---
 
 ## Variables
 
-### `[[ARGS.NAME]]`
+### `$$name`
 
-Comes from the CLI or a prompt. `NAME` is always set from the first argument.
+Simple variable injection from arguments. The `name` argument is always set from the second CLI argument.
 
 ```bash
-snooks make Button component color=blue
-# [[ARGS.NAME]]  → Button
-# [[ARGS.COLOR]] → blue
+snooks make component Button color=blue
+# $$name  → Button
+# $$color → blue
 ```
 
-### `[[CONFIG.KEY]]`
+You can also use the explicit form `${args.name}$` for better clarity or when concatenating:
+
+```tsx
+type ${args.name}$PropsT = { ... }
+```
+
+### `${config.key}$`
 
 Comes from `package.json`:
 
@@ -116,7 +117,7 @@ Comes from `package.json`:
 ```
 
 ```
-[[CONFIG.ORG_NAME]] → acme
+${config.orgname}$ → acme
 ```
 
 ---
